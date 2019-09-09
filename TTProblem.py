@@ -12,7 +12,8 @@ class TTProblem:
         self.__optstudent = inputfromXML[7]
         self.__rooms = inputfromXML[8]
         self.__courses = inputfromXML[9]
-        self.__students = inputfromXML[10]
+        self.__distributions = inputfromXML[10]
+        self.__students = inputfromXML[11]
         
 
 

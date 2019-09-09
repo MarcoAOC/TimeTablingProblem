@@ -1,8 +1,14 @@
 import xml.dom.minidom
-import Class
+from Clazz import Clazz
 from Room import Room 
 from Unavailable import Unavailable
 from Student import Student
+from Distribution import Distribution
+from Course import Course
+from Config import Config
+from Time import Time
+from Subpart import Subpart
+import re
 class XMLParser:
     def __init__(self, filepath):
         self.__doc = xml.dom.minidom.parse(filepath)
@@ -20,7 +26,9 @@ class XMLParser:
         output.append(aux[7])
         output.append(self.__arrangerooms())
         #output.append(self.getcourses())
-        #output.append(self.__getstudents())
+        output.append(self.__getdistributions())
+        output.append(self.__getstudents())
+        return output
 
     def __getproblemopt(self):
         problem = self.__doc.getElementsByTagName("problem")
@@ -73,3 +81,69 @@ class XMLParser:
 
         return output
 
+    def __getdistributions(self):
+        distributions = self.__doc.getElementsByTagName("distributions")
+        distribution = distributions[0].getElementsByTagName("distribution")
+        output = []
+        retester = re.compile('\(([^)]+)\)')
+        for x in distribution :
+            completestring = x.getAttribute("type")
+            auxiliarstring = retester.search(completestring)
+            params = None
+            if(auxiliarstring != None):
+                params = auxiliarstring.group(0)[1:-1]
+                firstbrack = auxiliarstring.regs[0][0]
+                name = completestring[0:firstbrack]
+            else:
+                name = completestring
+            classesids = []
+            for classaux in x.getElementsByTagName("class"):
+                classesids.append(int(classaux.getAttribute("id"),10))
+            reqpen = x.getAttribute("required")
+            if(reqpen == ''):
+                reqpen = int(x.getAttribute("penalty"),10)
+            output.append(Distribution(name,params,classesids,reqpen))
+        return output
+    def getcourses(self):
+        courses = self.__doc.getElementsByTagName("courses")
+        coursex = courses[0].getElementsByTagName("course")
+        output = []
+        for course in coursex:
+            y = course.getElementsByTagName("config")
+            courseid = int(course.getAttribute("id"),10)
+            outputconfig = []
+            for config in y:
+                z = config.getElementsByTagName("subpart")
+                configid = int(config.getAttribute("id"),10)
+                outputsubpart = []
+                for subpart in z:
+                    w = subpart.getElementsByTagName("class")
+                    subpartid = int(subpart.getAttribute("id"),10)
+                    outputclass = []
+                    for classx in w: 
+                        classid = int(classx.getAttribute("id"),10)
+                        classlimit = int(classx.getAttribute("limit"),10)
+                        aux = classx.getElementsByTagName("room")
+                        rooms = {}
+                        for room in aux:
+                            idaux = int(room.getAttribute("id"),10)
+                            penaux = int(room.getAttribute("penalty"),10)
+                            rooms[idaux] = penaux
+                        aux = classx.getElementsByTagName("time")
+                        times = []
+                        for time in aux:
+                            days = room.getAttribute("days")
+                            weeks = room.getAttribute("weeks")
+                            start = int(time.getAttribute("start"),10)
+                            length = int(time.getAttribute("length"),10)
+                            penaux = int(time.getAttribute("penalty"),10)
+                            times.append(Time(days,start,length,weeks,penaux))
+                        outputclass.append(Clazz(classid,classlimit,rooms,times)) 
+                    outputsubpart.append(Subpart(subpartid,outputclass))     
+                outputconfig.append(Config(config,outputsubpart))
+            output.append(Course(courseid,outputconfig))  
+        return output    
+
+
+a = XMLParser("sampleproblem.xml")
+x = a.getcourses()
