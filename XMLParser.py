@@ -25,7 +25,7 @@ class XMLParser:
         output.append(aux[6])
         output.append(aux[7])
         output.append(self.__arrangerooms())
-        #output.append(self.getcourses())
+        output.append(self.__getcourses())
         output.append(self.__getdistributions())
         output.append(self.__getstudents())
         return output
@@ -104,7 +104,7 @@ class XMLParser:
                 reqpen = int(x.getAttribute("penalty"),10)
             output.append(Distribution(name,params,classesids,reqpen))
         return output
-    def getcourses(self):
+    def __getcourses(self):
         courses = self.__doc.getElementsByTagName("courses")
         coursex = courses[0].getElementsByTagName("course")
         output = []
@@ -122,28 +122,34 @@ class XMLParser:
                     outputclass = []
                     for classx in w: 
                         classid = int(classx.getAttribute("id"),10)
-                        classlimit = int(classx.getAttribute("limit"),10)
-                        aux = classx.getElementsByTagName("room")
+                        classlimit = classx.getAttribute("limit")
+                        parentclss = classx.getAttribute("parent")
+                        if(parentclss!=''):
+                            parentclss = int(parentclss,10)
+                        if(classlimit != ''):
+                            classlimit = int(classlimit,10)
+                        roombool = classx.getAttribute("room")
                         rooms = {}
-                        for room in aux:
-                            idaux = int(room.getAttribute("id"),10)
-                            penaux = int(room.getAttribute("penalty"),10)
-                            rooms[idaux] = penaux
+                        if(roombool != "false"):
+                            aux = classx.getElementsByTagName("room")
+                            for room in aux:
+                                idaux = int(room.getAttribute("id"),10)
+                                penaux = int(room.getAttribute("penalty"),10)
+                                rooms[idaux] = penaux
+                        else:
+                            rooms = "false"
                         aux = classx.getElementsByTagName("time")
                         times = []
                         for time in aux:
-                            days = room.getAttribute("days")
-                            weeks = room.getAttribute("weeks")
+                            days = time.getAttribute("days")
+                            weeks = time.getAttribute("weeks")
                             start = int(time.getAttribute("start"),10)
                             length = int(time.getAttribute("length"),10)
                             penaux = int(time.getAttribute("penalty"),10)
                             times.append(Time(days,start,length,weeks,penaux))
-                        outputclass.append(Clazz(classid,classlimit,rooms,times)) 
+                        outputclass.append(Clazz(classid,classlimit,rooms,times,parentclss)) 
                     outputsubpart.append(Subpart(subpartid,outputclass))     
-                outputconfig.append(Config(config,outputsubpart))
+                outputconfig.append(Config(configid,outputsubpart))
             output.append(Course(courseid,outputconfig))  
         return output    
 
-
-a = XMLParser("sampleproblem.xml")
-x = a.getcourses()
