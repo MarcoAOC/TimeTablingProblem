@@ -1,7 +1,10 @@
 class Clazz:
-    def __init__(self,idx,limitx,roomx,timex,parentx):
+    def __init__(self,idx,limitx,roomx,parentx,cid,confid,subid,avbtimes):
         self.classid = idx
         self.limit = limitx
         self.rooms = roomx
-        self.times = timex
         self.parent = parentx
+        self.courseid = cid
+        self.configid = confid
+        self.subpartid = subid
+        self.availabletimes = avbtimes

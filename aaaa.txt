@@ -1,0 +1,23 @@
+data;
+param nCourses := ;
+param nStudents :=2;
+param nRooms :=3;
+param nTimeOptions := ;
+param travelTimes :=
+2 1 2
+3 2 3
+;
+param roomCapacity :=
+1 50
+2 100
+3 80
+;
+set SC :
+1 1
+1 5
+2 1
+2 3
+2 4
+;
+
+ end;

@@ -1,10 +1,12 @@
 from TTProblem import TTProblem
 from XMLParser import XMLParser
 from InputFileHandling import InputFileHandling
-inputx = XMLParser("sampleproblem.xml").getInput()
+import time
+inputx = XMLParser("lums-sum17.xml").getInput()
 tst = TTProblem(inputx)
-x = InputFileHandling("aaaa.txt")
+x = InputFileHandling("lums-sum17.dat")
+start = time.time()
 x.writeonFile(tst)
-
-print(tst)
+end = time.time()
+print(end - start)
 

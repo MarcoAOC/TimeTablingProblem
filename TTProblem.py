@@ -11,9 +11,10 @@ class TTProblem:
         self.optdistribution = inputfromXML[6]
         self.optstudent = inputfromXML[7]
         self.rooms = inputfromXML[8]
-        self.courses = inputfromXML[9]
-        self.distributions = inputfromXML[10]
-        self.students = inputfromXML[11]
+        self.classes = inputfromXML[9]
+        self.times = inputfromXML[10]
+        self.distributions = inputfromXML[11]
+        self.students = inputfromXML[12]
         
 
 

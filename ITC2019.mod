@@ -172,7 +172,7 @@ set PRC :=
 4 2
 ;
 
-set RUT :=
+set RUT := # room unavailable time
 #1 1
 #1 2
 #2 3

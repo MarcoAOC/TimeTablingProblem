@@ -24,8 +24,11 @@ class XMLParser:
         output.append(aux[5])
         output.append(aux[6])
         output.append(aux[7])
-        output.append(self.__arrangerooms())
-        output.append(self.__getcourses())
+        auxiliarunatime = (self.__arrangerooms())
+        output.append(auxiliarunatime)
+        auxiliar = self.__getcourses_and_time(auxiliarunatime)
+        output.append(auxiliar[0])
+        output.append(auxiliar[1])
         output.append(self.__getdistributions())
         output.append(self.__getstudents())
         return output
@@ -55,6 +58,7 @@ class XMLParser:
             unavailables =[]
             travel = x.getElementsByTagName("travel")
             unava = x.getElementsByTagName("unavailable")
+            times = []
             if(travel != []):
                 for traveltime in travel:
                     travelaux[traveltime.getAttribute("room")] = int(traveltime.getAttribute("value"),10)
@@ -104,22 +108,21 @@ class XMLParser:
                 reqpen = int(x.getAttribute("penalty"),10)
             output.append(Distribution(name,params,classesids,reqpen))
         return output
-    def __getcourses(self):
+    def __getcourses_and_time(self,roomsunavlb):
         courses = self.__doc.getElementsByTagName("courses")
         coursex = courses[0].getElementsByTagName("course")
         output = []
+        outputimes = []
+        timescounter = 0
         for course in coursex:
             y = course.getElementsByTagName("config")
             courseid = int(course.getAttribute("id"),10)
-            outputconfig = []
             for config in y:
                 z = config.getElementsByTagName("subpart")
                 configid = int(config.getAttribute("id"),10)
-                outputsubpart = []
                 for subpart in z:
                     w = subpart.getElementsByTagName("class")
                     subpartid = int(subpart.getAttribute("id"),10)
-                    outputclass = []
                     for classx in w: 
                         classid = int(classx.getAttribute("id"),10)
                         classlimit = classx.getAttribute("limit")
@@ -146,10 +149,13 @@ class XMLParser:
                             start = int(time.getAttribute("start"),10)
                             length = int(time.getAttribute("length"),10)
                             penaux = int(time.getAttribute("penalty"),10)
-                            times.append(Time(days,start,length,weeks,penaux))
-                        outputclass.append(Clazz(classid,classlimit,rooms,times,parentclss)) 
-                    outputsubpart.append(Subpart(subpartid,outputclass))     
-                outputconfig.append(Config(configid,outputsubpart))
-            output.append(Course(courseid,outputconfig))  
-        return output    
+                            outputimes.append(Time(days,start,length,weeks,penaux,classid,timescounter+1))
+                            times.append(timescounter)
+                            timescounter += 1
+                        output.append(Clazz(classid,classlimit,rooms,parentclss,courseid,configid,subpartid,times))
+        for time in roomsunavlb:
+            for unavai in time.unavailable:
+                outputimes.append(Time(unavai.days,unavai.start,unavai.length,unavai.weeks,"unnv",time.id,timescounter+1))
+                timescounter += 1
+        return (output, outputimes)
 
