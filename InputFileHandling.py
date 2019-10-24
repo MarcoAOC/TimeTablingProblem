@@ -65,51 +65,19 @@ class InputFileHandling:
 
         stringFile = "set PRC :=\n"
         fh.write(stringFile)
-        #ALTERAR
-        for i in a.rooms:
-            for j in a.classes:
-                for aux in j.availabletimes:
-                    k = a.times[aux]
-                    flag = 0
-                    for z in i.unavailable:
-                        for x in range(0, a.nrWeeks):
-                            if (k.weeks[x] != '0' and z.weeks[x] != '0'):
-                                for y in range(0, a.nrDays):
-                                    if (k.days[y] != '0' and z.days[y] != '0'):
-                                        timetotalunv = k.start + k.length
-                                        timeetotaltt = z.start + z.length
-                                        if (k.start <= timeetotaltt and timetotalunv >= z.start):
-                                            flag = 1
-                                            break
-                            if (flag == 1):
-                                break
-                    if(flag == 0):
-                        stringFile = str(j.classid) + " " + str(i.id) + "\n"
-                        fh.write(stringFile)
-                        break
+        for i in a.classes:
+            for j in i.rooms:
+                stringFile = str(i.classid) + " " + str(j) + "\n"
+                fh.write(stringFile)
 
         stringFile = "set RUT :=\n"
         fh.write(stringFile)
-        #COLOCAR RUT NO VETOR DE TIMES
-        for i in a.rooms:
-            for k in a.times:
-                flag = 0
-                for j in i.unavailable:
-                    for x in range(0, a.nrWeeks):
-                        if (j.weeks[x] != '0' and k.weeks[x] != '0'):
-                            for y in range(0, a.nrDays):
-                                if (j.days[y] != '0' and k.days[y] != '0'):
-                                    timetotalunv = j.start + j.length
-                                    timeetotaltt = k.start + k.length
-                                    if (j.start <= timeetotaltt and timetotalunv >= k.start):
-                                        flag = 1
-                                        stringFile = str(i.id) + " " + str(k.timeid) + "\n"
-                                        fh.write(stringFile)
-                                        break
-                        if (flag == 1):
-                            break
-                    if (flag == 1):
-                        break
+        i = len(a.times) - 1
+        # quando possuir "unnv" o classid na vdd será roomid pois vem do vetor de unnavailable time de salas
+        while (a.times[i].penalty == "unnv" or i<0):
+            stringFile = str(a.times[i].classid) + " " + str(a.times[i].timeid) + "\n"
+            fh.write(stringFile)
+            i -=1
         stringFile = "\n end;"
         fh.write(stringFile)
         fh.close

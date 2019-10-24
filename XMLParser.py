@@ -153,9 +153,9 @@ class XMLParser:
                             times.append(timescounter)
                             timescounter += 1
                         output.append(Clazz(classid,classlimit,rooms,parentclss,courseid,configid,subpartid,times))
-        for time in roomsunavlb:
-            for unavai in time.unavailable:
-                outputimes.append(Time(unavai.days,unavai.start,unavai.length,unavai.weeks,"unnv",time.id,timescounter+1))
+        for room in roomsunavlb:
+            for unavai in room.unavailable:
+                outputimes.append(Time(unavai.days,unavai.start,unavai.length,unavai.weeks,"unnv",room.id,timescounter+1))
                 timescounter += 1
         return (output, outputimes)
 
